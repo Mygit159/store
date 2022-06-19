@@ -1,0 +1,70 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.cy.store.mapper.OrderMapper">
+    <resultMap id="orderEntityMap" type="com.cy.store.entity.Order">
+        <id column="aid" property="aid"></id>
+        <result column="recv_name" property="recvName"></result>
+        <result column="recv_phone" property="recvPhone"></result>
+        <result column="recv_province" property="recvProvince"></result>
+        <result column="recv_city" property="recvCity"></result>
+        <result column="recv_area" property="recvArea"></result>
+        <result column="recv_address" property="recvAddress"></result>
+        <result column="total_price" property="totalPrice"></result>
+        <result column="order_time" property="orderTime"></result>
+        <result column="pay_time" property="payTime"></result>
+        <result column="created_user" property="createdUser"></result>
+        <result column="created_time" property="createdTime"></result>
+        <result column="modified_user" property="modifiedUser"></result>
+        <result column="modified_time" property="modifiedTime"></result>
+    </resultMap>
+    <!--使用标签写sql语句-->
+    <insert id="insertOrder" useGeneratedKeys="true" keyProperty="oid">
+       insert into t_order(uid,recv_name,recv_phone,recv_province,recv_city,recv_area,recv_address,total_price,
+       status,order_time,pay_time,created_user,created_time,modified_user,modified_time)
+       values (#{uid},#{recvName},#{recvPhone},#{recvProvince},#{recvCity},#{recvArea},#{recvAddress},#{totalPrice},
+       #{status},#{orderTime},#{payTime},#{createdUser},#{createdTime},#{modifiedUser},#{modifiedTime}
+       )
+   </insert>
+    
+    <insert id="insertOrderItem" useGeneratedKeys="true" keyProperty="id">
+        insert  into t_order_item( oid, pid,title,image, price, num,created_user,created_time,modified_user,modified_time)
+        values (
+          #{oid},#{pid},#{title},#{image},#{price},#{num},#{createdUser},#{createdTime},#{modifiedUser},#{modifiedTime}
+        )
+    </insert>
+
+    <select id="selectByOid" resultMap="orderEntityMap">
+        select * from t_order where oid=#{oid};
+    </select>
+
+    <select id="findDetailByOid" resultType="com.cy.store.vo.OrderItem">
+        select * from t_order_item
+        where oid IN
+        <foreach item="item" index="index" collection="oids" open="(" separator="," close=")">
+            #{item}
+        </foreach>
+        order by oid DESC
+    </select>
+
+    <select id="findOidByUid" resultType="java.lang.Integer">
+        select oid from t_order where  uid=#{uid}
+    </select>
+
+    <select id="selectSearch" resultType="com.cy.store.vo.OrderItem">
+        select * from  t_order_item
+        <where>
+            <if test=" oids!=null and oids.length > 0">
+                AND oid IN
+                <foreach item="item" collection="oids" open="(" separator="," close=")">
+                    #{item}
+                </foreach>
+            </if>
+            <if test="search!='' and search!=null">
+                 AND title like  CONCAT('%', #{search}, '%')
+            </if>
+        </where>
+
+    </select>
+</mapper>

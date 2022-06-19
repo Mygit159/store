@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.cy.store.mapper.DistrictMapper">
+    <!--使用标签写sql语句-->
+    <select id="findDistrictByParent" resultType="com.cy.store.entity.District">
+        select * from t_dict_district where parent=#{parent} order  by code asc
+    </select>
+
+    <select id="findDistrictByCode" resultType="java.lang.String">
+        select name from t_dict_district where code=#{code}
+    </select>
+</mapper>
